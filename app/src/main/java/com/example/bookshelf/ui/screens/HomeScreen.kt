@@ -1,6 +1,8 @@
 package com.example.bookshelf.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
@@ -32,28 +35,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.bookshelf.R
-import com.example.bookshelf.model.Book
+import com.example.bookshelf.model.GoogleBook
+import com.example.bookshelf.model.ImageLinks
+import com.example.bookshelf.model.VolumeInfo
 import com.example.bookshelf.ui.theme.BookshelfTheme
 
 @Composable
 fun HomeScreen(
-    bookshelfViewModel: BookshelfViewModel,
+    uiState: UiState,
+    onBookClick: (GoogleBook) -> Unit,
+    onSearchKeywordChange: (String) -> Unit,
+    onKeyboardDone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val uiState by bookshelfViewModel.uiState.collectAsState()
-
     Column(modifier = modifier) {
         SearchTextField(
             searchKeyword = uiState.searchKeyword,
             onSearchKeywordChange = { inputSearchKeyword ->
-                bookshelfViewModel.updateSearchKeyword(inputSearchKeyword)
+                onSearchKeywordChange(inputSearchKeyword)
                                     },
+            onKeyboardDone = onKeyboardDone,
             modifier = Modifier.fillMaxWidth()
         )
 
-        // For testing purpose
-        val mockData = List(5) { Book("https://developer.android.com/codelabs/basic-android-kotlin-compose-amphibians-app/img/great-basin-spadefoot.png") }
-        BookList(bookList = mockData)
+        when(uiState.books) {
+            is BookshelfUiSate.Success -> BookList(
+                bookList = (uiState.books as BookshelfUiSate.Success).googleBooks.items,
+                onBookClick = { selectedBook ->
+                    onBookClick(selectedBook)
+                }
+            )
+            is BookshelfUiSate.Loading -> Text(text = "Loading...")
+            is BookshelfUiSate.Error -> Text(text = "Error!")
+        }
     }
 }
 
@@ -74,13 +88,17 @@ fun TopAppBar(
 fun SearchTextField(
     modifier: Modifier = Modifier,
     searchKeyword: String,
-    onSearchKeywordChange: (String) -> Unit
+    onSearchKeywordChange: (String) -> Unit,
+    onKeyboardDone: () -> Unit
 ) {
     OutlinedTextField(
         value = searchKeyword,
         onValueChange = onSearchKeywordChange,
         singleLine = true,
         placeholder = { SearchTextPlaceHolder() },
+        keyboardActions = KeyboardActions(
+            onDone = { onKeyboardDone() }
+        ),
         modifier = modifier
     )
 }
@@ -101,7 +119,8 @@ fun SearchTextPlaceHolder(modifier: Modifier = Modifier) {
 
 @Composable
 fun BookList(
-    bookList: List<Book>,
+    bookList: MutableList<GoogleBook>,
+    onBookClick: (GoogleBook) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -112,20 +131,30 @@ fun BookList(
         modifier = modifier
     ) {
         items(bookList) {
-            BookCard(book = it)
+            BookCard(
+                book = it,
+                onBookClick = { selectedBook ->
+                    onBookClick(selectedBook)
+                }
+            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookCard(
-    book: Book,
-    modifier: Modifier = Modifier
+    book: GoogleBook,
+    modifier: Modifier = Modifier,
+    onBookClick: (GoogleBook) -> Unit
 ) {
-    Card(modifier = modifier) {
+    Card(
+        modifier = modifier,
+        onClick = { onBookClick(book) }
+    ) {
         AsyncImage(
             model = ImageRequest.Builder(context = LocalContext.current)
-                .data(book.imgSrc)
+                .data(book.volumeInfo.imageLinks.thumbnail.replace("http", "https"))
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.loading_img),
@@ -154,19 +183,37 @@ fun SearchTextFieldPreview() {
         Surface {
             SearchTextField(
                 searchKeyword = "",
-                onSearchKeywordChange = {}
+                onSearchKeywordChange = {},
+                onKeyboardDone = {}
             )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun BookCardPreview() {
     BookshelfTheme {
         Surface {
-            val mockData = Book("https://developer.android.com/codelabs/basic-android-kotlin-compose-amphibians-app/img/great-basin-spadefoot.png")
-            BookCard(book = mockData)
+            val mockData = GoogleBook(
+                id = "",
+                volumeInfo = VolumeInfo(
+                    title = "",
+                    //authors = listOf("", ""),
+                    publisher = "",
+                    publishedDate = "",
+                    description = "",
+                    imageLinks = ImageLinks(
+                        smallThumbnail = "",
+                        thumbnail = ""
+                    )
+                )
+            )
+            BookCard(
+                book = mockData,
+                onBookClick = {}
+            )
         }
     }
 }
@@ -176,10 +223,29 @@ fun BookCardPreview() {
 fun BookListPreview() {
     BookshelfTheme {
         Surface {
-            val mockData = List(5) { Book("https://developer.android.com/codelabs/basic-android-kotlin-compose-amphibians-app/img/great-basin-spadefoot.png") }
-            BookList(bookList = mockData)
+            val mockData = MutableList(3) {
+                GoogleBook(
+                    id = "",
+                    volumeInfo = VolumeInfo(
+                        title = "",
+                        //authors = listOf("", ""),
+                        publisher = "",
+                        publishedDate = "",
+                        description = "",
+                        imageLinks = ImageLinks(
+                            smallThumbnail = "",
+                            thumbnail = ""
+                        )
+                    )
+                )
+            }
+            BookList(
+                bookList = mockData,
+                onBookClick = {}
+            )
         }
     }
 }
+
 
 

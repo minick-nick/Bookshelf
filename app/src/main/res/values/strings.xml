@@ -3,4 +3,8 @@
     <string name="search_books">Search books</string>
     <string name="search_icon">Search icon</string>
     <string name="book_photo">book photo</string>
+    <string name="authors">Authors:</string>
+    <string name="publisher">Publisher:</string>
+    <string name="published_date">Published Date:</string>
+    <string name="description">Description:</string>
 </resources>
