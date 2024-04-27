@@ -37,7 +37,6 @@ class BookshelfViewModel(private val googleBooksRepository: GoogleBooksRepositor
         viewModelScope.launch {
             val result = try {
                 val result = googleBooksRepository.getGoogleBooks(keyword)
-                Log.i("getGoogleBooks", result.toString())
                 BookshelfUiSate.Success(result)
             } catch (e: IOException) {
                 BookshelfUiSate.Error
@@ -55,17 +54,6 @@ class BookshelfViewModel(private val googleBooksRepository: GoogleBooksRepositor
             currentState.copy(
                 currentScreen = screen
             )
-        }
-    }
-
-    fun getGoogleBookUsingVolumeId(volumeId: String) {
-        viewModelScope.launch {
-            try {
-                val result = googleBooksRepository.getGoogleBookUsingVolumeId(volumeId)
-                Log.i("getGoogleBookUsingVolumeId", result.toString())
-            } catch (e: IOException) {
-
-            }
         }
     }
 

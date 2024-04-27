@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -45,16 +48,18 @@ fun BookInfoScreen(
                 end = dimensionResource(R.dimen.extra_large_padding),
                 top = dimensionResource(R.dimen.large_padding)
             )
+            .verticalScroll(rememberScrollState())
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(book.volumeInfo.imageLinks.thumbnail.replace("http", "https"))
+                    .data(book.volumeInfo.imageLinks.thumb)
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.loading_img),
                 error = painterResource(R.drawable.ic_connection_error),
                 contentDescription = stringResource(R.string.book_photo),
+                contentScale = ContentScale.FillHeight,
                 modifier = modifier
                     .fillMaxWidth()
                     .height(400.dp)
@@ -72,7 +77,7 @@ fun BookInfoScreen(
                 modifier = modifier.padding(end = dimensionResource(R.dimen.extra_small_padding))
             )
             Text(
-                text = "",//book.volumeInfo.authors[0],
+                text = book.volumeInfo._authors.toString(),
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -104,7 +109,8 @@ fun BookInfoScreen(
         )
         Text(
             text = book.volumeInfo.description,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Justify
         )
     }
 }

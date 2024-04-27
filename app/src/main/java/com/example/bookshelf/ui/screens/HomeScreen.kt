@@ -60,7 +60,7 @@ fun HomeScreen(
 
         when(uiState.books) {
             is BookshelfUiSate.Success -> BookList(
-                bookList = (uiState.books as BookshelfUiSate.Success).googleBooks.items,
+                bookList = uiState.books.googleBooks.items,
                 onBookClick = { selectedBook ->
                     onBookClick(selectedBook)
                 }
@@ -154,7 +154,7 @@ fun BookCard(
     ) {
         AsyncImage(
             model = ImageRequest.Builder(context = LocalContext.current)
-                .data(book.volumeInfo.imageLinks.thumbnail.replace("http", "https"))
+                .data(book.volumeInfo.imageLinks.thumb)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.loading_img),

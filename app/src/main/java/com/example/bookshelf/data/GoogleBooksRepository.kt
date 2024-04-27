@@ -6,7 +6,6 @@ import com.example.bookshelf.network.GoogleBooksApiService
 
 interface GoogleBooksRepository {
     suspend fun getGoogleBooks(keyword: String): GoogleBooks
-    suspend fun getGoogleBookUsingVolumeId(volumeId: String): GoogleBook
 }
 
 class NetworkGoogleBooksRepository(
@@ -14,7 +13,4 @@ class NetworkGoogleBooksRepository(
 ) : GoogleBooksRepository {
     override suspend fun getGoogleBooks(keyword: String)
         = googleBooksApiService.getGoogleBooks(keyword)
-
-    override suspend fun getGoogleBookUsingVolumeId(volumeId: String)
-        = googleBooksApiService.getGoogleBookUsingVolumeId(volumeId)
 }

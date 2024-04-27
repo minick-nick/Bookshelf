@@ -40,9 +40,6 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
             is Screens.BookInfoScreen -> {
                 val selectedBook = (uiState.currentScreen as Screens.BookInfoScreen).book
 
-                // This is for testing
-                bookShelfViewModel.getGoogleBookUsingVolumeId(selectedBook.id)
-
                 BookInfoScreen(
                     book = selectedBook,
                     onBack = { bookShelfViewModel.changeScreen(Screens.HomeScreen) }
