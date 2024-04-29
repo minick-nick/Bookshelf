@@ -18,10 +18,10 @@ class BookshelfViewModelTest {
         val bookshelfViewModel = BookshelfViewModel(
             googleBooksRepository = FakeNetworkGoogleBooksRepository()
         )
-        // This test is not yet completed
-        bookshelfViewModel.getGoogleBooks("")
+        val keyword = "title"
+        bookshelfViewModel.getGoogleBooks(keyword)
         assertEquals(
-            BookshelfUiSate.Success(FakeDataSource.googleBooks),
+            BookshelfUiSate.Success(FakeDataSource.getGoogleBooks(keyword)),
             bookshelfViewModel.uiState.value.books
         )
     }

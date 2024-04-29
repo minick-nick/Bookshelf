@@ -10,7 +10,7 @@ class NetworkGoogleBooksRepositoryTest {
     fun networkGoogleBooksRepository_getGoogleBooks_verifyGoogleBooks() = runTest {
         val fakeGoogleApiService = FakeGoogleApiService()
         val repository = NetworkGoogleBooksRepository(fakeGoogleApiService)
-        // This test is not yet completed
-        assertEquals(FakeDataSource.googleBooks, repository.getGoogleBooks(""))
+        val keyword = "title"
+        assertEquals(FakeDataSource.getGoogleBooks(keyword), repository.getGoogleBooks(keyword))
     }
 }

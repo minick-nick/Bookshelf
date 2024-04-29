@@ -9,7 +9,7 @@ object FakeDataSource {
     private val googleBook1 = GoogleBook(
         id = "id1",
         volumeInfo = VolumeInfo(
-            title = "title1",
+            title = "title 1",
             authors = listOf("author1", "author2"),
             publisher = "publisher1",
             publishedDate = "published date1",
@@ -24,7 +24,7 @@ object FakeDataSource {
     private val googleBook2 = GoogleBook(
         id = "id2",
         volumeInfo = VolumeInfo(
-            title = "title2",
+            title = "title 2",
             authors = listOf("author1", "author2"),
             publisher = "publisher2",
             publishedDate = "published date2",
@@ -39,7 +39,7 @@ object FakeDataSource {
     private val googleBook3 = GoogleBook(
         id = "id3",
         volumeInfo = VolumeInfo(
-            title = "title3",
+            title = "title 3",
             authors = listOf("author1", "author2"),
             publisher = "publisher3",
             publishedDate = "published date3",
@@ -51,12 +51,19 @@ object FakeDataSource {
         )
     )
 
-    val googleBooks = GoogleBooks(
-        totalItems = 3,
-        items = mutableListOf(
-            googleBook1,
-            googleBook2,
-            googleBook3
-        )
+    private val googleBooks = mutableListOf(
+        googleBook1,
+        googleBook2,
+        googleBook3
     )
+
+    fun getGoogleBooks(keyword: String): GoogleBooks {
+        val result = mutableListOf<GoogleBook>()
+
+        googleBooks.forEach {
+            if (it.volumeInfo.title.contains(keyword)) result.add(it)
+        }
+
+        return GoogleBooks(totalItems = result.size, items = result)
+    }
 }
